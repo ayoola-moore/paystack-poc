@@ -1,7 +1,12 @@
 import React, { useState } from 'react'
 import axios from 'axios'
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL
+// Use current domain for API calls in production, localhost for development
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || (
+  import.meta.env.MODE === 'production' 
+    ? `${window.location.origin}/api`
+    : 'http://localhost:3001/api'
+)
 
 // Sample marketplace items
 const sampleItems = [
@@ -90,17 +95,37 @@ function Checkout() {
         method: paymentMethod
       }
       
-      const response = await axios.post(`${API_BASE_URL}/checkout`, checkoutData)
+      console.log('Making checkout request to:', `${API_BASE_URL}/checkout`)
+      console.log('Checkout data:', checkoutData)
+      
+      const response = await axios.post(`${API_BASE_URL}/checkout`, checkoutData, {
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        timeout: 10000 // 10 second timeout
+      })
+      
+      console.log('Checkout response:', response.data)
       
       if (response.data.success) {
         // Redirect to Paystack payment page
         window.location.href = response.data.authorization_url
       } else {
-        setError('Failed to initialize checkout')
+        setError('Failed to initialize checkout: ' + (response.data.message || 'Unknown error'))
       }
     } catch (error) {
       console.error('Checkout error:', error)
-      setError(error.response?.data?.message || 'Failed to process checkout')
+      console.error('Error response:', error.response)
+      
+      if (error.code === 'ECONNABORTED') {
+        setError('Request timeout - please try again')
+      } else if (error.response?.status === 404) {
+        setError('API endpoint not found - deployment issue')
+      } else if (error.response?.status >= 500) {
+        setError('Server error - please try again later')
+      } else {
+        setError(error.response?.data?.message || error.message || 'Failed to process checkout')
+      }
     } finally {
       setLoading(false)
     }
@@ -113,10 +138,10 @@ function Checkout() {
         <h2>🏪 Marketplace Items</h2>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: '16px' }}>
           {sampleItems.map(item => (
-            <div key={item.id} style={{ border: '1px solid #ddd', borderRadius: '8px', padding: '16px' }}>
-              <h4>{item.name}</h4>
-              <p style={{ color: '#666', margin: '4px 0' }}>{item.category}</p>
-              <p style={{ fontSize: '18px', fontWeight: 'bold', color: '#28a745' }}>₦{item.price.toLocaleString()}</p>
+            <div key={item.id} style={{ border: '1px solid #555', borderRadius: '8px', padding: '16px', backgroundColor: '#3d3d3d' }}>
+              <h4 style={{ color: '#ffffff', margin: '0 0 8px 0' }}>{item.name}</h4>
+              <p style={{ color: '#cccccc', margin: '4px 0' }}>{item.category}</p>
+              <p style={{ fontSize: '18px', fontWeight: 'bold', color: '#198754' }}>₦{item.price.toLocaleString()}</p>
               <button 
                 className="btn btn-primary"
                 onClick={() => addToCart(item)}
@@ -133,7 +158,7 @@ function Checkout() {
       <div className="card">
         <h2>🛒 Shopping Cart ({cart.length} items)</h2>
         {cart.length === 0 ? (
-          <p style={{ color: '#666', textAlign: 'center', padding: '20px' }}>
+          <p style={{ color: '#cccccc', textAlign: 'center', padding: '20px' }}>
             Your cart is empty. Add some items from the marketplace above.
           </p>
         ) : (
@@ -141,8 +166,8 @@ function Checkout() {
             {cart.map(item => (
               <div key={item.id} className="cart-item">
                 <div>
-                  <h4 style={{ margin: '0 0 4px 0' }}>{item.name}</h4>
-                  <p style={{ margin: 0, color: '#666' }}>₦{item.price.toLocaleString()} each</p>
+                  <h4 style={{ margin: '0 0 4px 0', color: '#ffffff' }}>{item.name}</h4>
+                  <p style={{ margin: 0, color: '#cccccc' }}>₦{item.price.toLocaleString()} each</p>
                 </div>
                 <div className="quantity-controls">
                   <button 
@@ -172,8 +197,8 @@ function Checkout() {
               </div>
             ))}
             
-            <div style={{ borderTop: '2px solid #333', paddingTop: '16px', marginTop: '16px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '20px', fontWeight: 'bold' }}>
+            <div style={{ borderTop: '2px solid #555', paddingTop: '16px', marginTop: '16px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '20px', fontWeight: 'bold', color: '#ffffff' }}>
                 <span>Total:</span>
                 <span>₦{getTotalAmount().toLocaleString()}</span>
               </div>
@@ -246,7 +271,7 @@ function Checkout() {
           >
             <h3>💳 Pay Now</h3>
             <p>Pay immediately using card, bank transfer, or USSD</p>
-            <ul style={{ margin: '8px 0', paddingLeft: '20px', fontSize: '14px', color: '#666' }}>
+            <ul style={{ margin: '8px 0', paddingLeft: '20px', fontSize: '14px', color: '#cccccc' }}>
               <li>Instant payment processing</li>
               <li>All payment channels available</li>
               <li>Immediate order fulfillment</li>
@@ -259,7 +284,7 @@ function Checkout() {
           >
             <h3>🚚 Pay on Delivery</h3>
             <p>Authorize your card now, pay when delivered</p>
-            <ul style={{ margin: '8px 0', paddingLeft: '20px', fontSize: '14px', color: '#666' }}>
+            <ul style={{ margin: '8px 0', paddingLeft: '20px', fontSize: '14px', color: '#cccccc' }}>
               <li>Card authorization (no charge yet)</li>
               <li>Payment on successful delivery</li>
               <li>Guaranteed payment protection</li>
@@ -294,7 +319,7 @@ function Checkout() {
         </button>
         
         {paymentMethod === 'POD' && (
-          <p style={{ textAlign: 'center', color: '#666', fontSize: '14px', marginTop: '8px' }}>
+          <p style={{ textAlign: 'center', color: '#cccccc', fontSize: '14px', marginTop: '8px' }}>
             Your card will be authorized but not charged until delivery is confirmed
           </p>
         )}

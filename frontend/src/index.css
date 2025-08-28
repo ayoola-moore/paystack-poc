@@ -6,7 +6,8 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: #f5f5f5;
+  background-color: #1a1a1a;
+  color: #ffffff;
 }
 
 * {
@@ -20,11 +21,12 @@ body {
 }
 
 .card {
-  background: white;
+  background: #2d2d2d;
   border-radius: 8px;
   padding: 24px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
   margin-bottom: 20px;
+  border: 1px solid #404040;
 }
 
 .btn {
@@ -41,30 +43,30 @@ body {
 }
 
 .btn-primary {
-  background-color: #007bff;
+  background-color: #0d6efd;
   color: white;
 }
 
 .btn-primary:hover {
-  background-color: #0056b3;
+  background-color: #0b5ed7;
 }
 
 .btn-success {
-  background-color: #28a745;
+  background-color: #198754;
   color: white;
 }
 
 .btn-success:hover {
-  background-color: #1e7e34;
+  background-color: #146c43;
 }
 
 .btn-warning {
   background-color: #ffc107;
-  color: #212529;
+  color: #000;
 }
 
 .btn-warning:hover {
-  background-color: #e0a800;
+  background-color: #ffcd39;
 }
 
 .btn:disabled {
@@ -80,20 +82,23 @@ body {
   display: block;
   margin-bottom: 4px;
   font-weight: 500;
-  color: #333;
+  color: #ffffff;
 }
 
 .form-input {
   width: 100%;
   padding: 12px;
-  border: 1px solid #ddd;
+  border: 1px solid #555;
   border-radius: 4px;
   font-size: 16px;
+  background-color: #3d3d3d;
+  color: #ffffff;
 }
 
 .form-input:focus {
   outline: none;
-  border-color: #007bff;
+  border-color: #0d6efd;
+  background-color: #404040;
 }
 
 .cart-item {
@@ -101,7 +106,7 @@ body {
   justify-content: space-between;
   align-items: center;
   padding: 12px 0;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid #404040;
 }
 
 .cart-item:last-child {
@@ -117,8 +122,9 @@ body {
 .quantity-btn {
   width: 32px;
   height: 32px;
-  border: 1px solid #ddd;
-  background: white;
+  border: 1px solid #555;
+  background: #3d3d3d;
+  color: #ffffff;
   border-radius: 4px;
   cursor: pointer;
   display: flex;
@@ -127,7 +133,7 @@ body {
 }
 
 .quantity-btn:hover {
-  background-color: #f5f5f5;
+  background-color: #4d4d4d;
 }
 
 .status {
@@ -166,31 +172,31 @@ body {
 }
 
 .error {
-  background-color: #f8d7da;
-  color: #721c24;
+  background-color: #dc3545;
+  color: #ffffff;
   padding: 12px;
   border-radius: 4px;
   margin: 16px 0;
 }
 
 .success {
-  background-color: #d4edda;
-  color: #155724;
+  background-color: #198754;
+  color: #ffffff;
   padding: 12px;
   border-radius: 4px;
   margin: 16px 0;
 }
 
 .header {
-  background: white;
+  background: #2d2d2d;
   padding: 16px 0;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid #404040;
   margin-bottom: 20px;
 }
 
 .header h1 {
   margin: 0;
-  color: #333;
+  color: #ffffff;
 }
 
 .payment-method {
@@ -201,30 +207,32 @@ body {
 
 .method-card {
   flex: 1;
-  border: 2px solid #ddd;
+  border: 2px solid #555;
   border-radius: 8px;
   padding: 16px;
   cursor: pointer;
   transition: all 0.2s;
+  background-color: #3d3d3d;
 }
 
 .method-card:hover {
-  border-color: #007bff;
+  border-color: #0d6efd;
+  background-color: #404040;
 }
 
 .method-card.selected {
-  border-color: #007bff;
-  background-color: #f8f9fa;
+  border-color: #0d6efd;
+  background-color: #404040;
 }
 
 .method-card h3 {
   margin: 0 0 8px 0;
-  color: #333;
+  color: #ffffff;
 }
 
 .method-card p {
   margin: 0;
-  color: #666;
+  color: #cccccc;
   font-size: 14px;
 }
 
