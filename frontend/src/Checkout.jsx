@@ -8,13 +8,13 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || (
     : 'http://localhost:3001/api'
 )
 
-// Sample marketplace items
+// Sample marketplace items with ZAR pricing
 const sampleItems = [
-  { id: 1, name: 'Fresh Tomatoes', price: 500, category: 'Vegetables' },
-  { id: 2, name: 'Rice (5kg)', price: 2500, category: 'Grains' },
-  { id: 3, name: 'Chicken', price: 1800, category: 'Meat' },
-  { id: 4, name: 'Plantain', price: 300, category: 'Fruits' },
-  { id: 5, name: 'Bread', price: 400, category: 'Bakery' },
+  { id: 1, name: 'Fresh Tomatoes', price: 25, category: 'Vegetables' },
+  { id: 2, name: 'Rice (5kg)', price: 120, category: 'Grains' },
+  { id: 3, name: 'Chicken', price: 85, category: 'Meat' },
+  { id: 4, name: 'Plantain', price: 15, category: 'Fruits' },
+  { id: 5, name: 'Bread', price: 20, category: 'Bakery' },
 ]
 
 function Checkout() {
@@ -25,9 +25,12 @@ function Checkout() {
     name: '',
     address: ''
   })
-  const [paymentMethod, setPaymentMethod] = useState('standard')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+
+  const formatPrice = (amount) => {
+    return `R${amount.toLocaleString()}`
+  }
 
   const addToCart = (item) => {
     const existingItem = cart.find(cartItem => cartItem.id === item.id)
@@ -91,8 +94,7 @@ function Checkout() {
     try {
       const checkoutData = {
         cart,
-        customerInfo,
-        method: paymentMethod
+        customerInfo
       }
       
       console.log('Making checkout request to:', `${API_BASE_URL}/checkout`)
@@ -133,15 +135,24 @@ function Checkout() {
 
   return (
     <div>
+      {/* Header */}
+      <div className="card">
+        <h2>🛒 Grundy Marketplace</h2>
+      </div>
+
       {/* Marketplace Items */}
       <div className="card">
-        <h2>🏪 Marketplace Items</h2>
+        <h2>🏪 Products</h2>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: '16px' }}>
           {sampleItems.map(item => (
             <div key={item.id} style={{ border: '1px solid #555', borderRadius: '8px', padding: '16px', backgroundColor: '#3d3d3d' }}>
               <h4 style={{ color: '#ffffff', margin: '0 0 8px 0' }}>{item.name}</h4>
               <p style={{ color: '#cccccc', margin: '4px 0' }}>{item.category}</p>
-              <p style={{ fontSize: '18px', fontWeight: 'bold', color: '#198754' }}>₦{item.price.toLocaleString()}</p>
+              <div style={{ margin: '8px 0' }}>
+                <p style={{ fontSize: '18px', fontWeight: 'bold', color: '#198754', margin: '2px 0' }}>
+                  {formatPrice(item.price)}
+                </p>
+              </div>
               <button 
                 className="btn btn-primary"
                 onClick={() => addToCart(item)}
@@ -167,7 +178,7 @@ function Checkout() {
               <div key={item.id} className="cart-item">
                 <div>
                   <h4 style={{ margin: '0 0 4px 0', color: '#ffffff' }}>{item.name}</h4>
-                  <p style={{ margin: 0, color: '#cccccc' }}>₦{item.price.toLocaleString()} each</p>
+                  <p style={{ margin: 0, color: '#cccccc' }}>{formatPrice(item.price)} each</p>
                 </div>
                 <div className="quantity-controls">
                   <button 
@@ -192,15 +203,15 @@ function Checkout() {
                   </button>
                 </div>
                 <div style={{ fontWeight: 'bold' }}>
-                  ₦{(item.price * item.quantity).toLocaleString()}
+                  {formatPrice(item.price * item.quantity)}
                 </div>
               </div>
             ))}
             
             <div style={{ borderTop: '2px solid #555', paddingTop: '16px', marginTop: '16px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '20px', fontWeight: 'bold', color: '#ffffff' }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '18px', fontWeight: 'bold', marginTop: '10px', paddingTop: '10px', borderTop: '1px solid #444' }}>
                 <span>Total:</span>
-                <span>₦{getTotalAmount().toLocaleString()}</span>
+                <span>{formatPrice(getTotalAmount())}</span>
               </div>
             </div>
           </>
@@ -261,38 +272,6 @@ function Checkout() {
         </div>
       </div>
 
-      {/* Payment Method Selection */}
-      <div className="card">
-        <h2>💳 Payment Method</h2>
-        <div className="payment-method">
-          <div 
-            className={`method-card ${paymentMethod === 'standard' ? 'selected' : ''}`}
-            onClick={() => setPaymentMethod('standard')}
-          >
-            <h3>💳 Pay Now</h3>
-            <p>Pay immediately using card, bank transfer, or USSD</p>
-            <ul style={{ margin: '8px 0', paddingLeft: '20px', fontSize: '14px', color: '#cccccc' }}>
-              <li>Instant payment processing</li>
-              <li>All payment channels available</li>
-              <li>Immediate order fulfillment</li>
-            </ul>
-          </div>
-          
-          <div 
-            className={`method-card ${paymentMethod === 'POD' ? 'selected' : ''}`}
-            onClick={() => setPaymentMethod('POD')}
-          >
-            <h3>🚚 Pay on Delivery</h3>
-            <p>Authorize your card now, pay when delivered</p>
-            <ul style={{ margin: '8px 0', paddingLeft: '20px', fontSize: '14px', color: '#cccccc' }}>
-              <li>Card authorization (no charge yet)</li>
-              <li>Payment on successful delivery</li>
-              <li>Guaranteed payment protection</li>
-            </ul>
-          </div>
-        </div>
-      </div>
-
       {/* Error Display */}
       {error && <div className="error">{error}</div>}
 
@@ -306,23 +285,15 @@ function Checkout() {
             width: '100%', 
             fontSize: '18px', 
             padding: '16px',
-            background: loading ? '#6c757d' : (paymentMethod === 'POD' ? '#ffc107' : '#28a745')
+            background: loading ? '#6c757d' : '#198754'
           }}
         >
           {loading ? (
             '⏳ Processing...'
-          ) : paymentMethod === 'POD' ? (
-            `🔒 Authorize Card for ₦${getTotalAmount().toLocaleString()}`
           ) : (
-            `💳 Pay ₦${getTotalAmount().toLocaleString()} Now`
+            ` Pay ${formatPrice(getTotalAmount())} Now`
           )}
         </button>
-        
-        {paymentMethod === 'POD' && (
-          <p style={{ textAlign: 'center', color: '#cccccc', fontSize: '14px', marginTop: '8px' }}>
-            Your card will be authorized but not charged until delivery is confirmed
-          </p>
-        )}
       </div>
     </div>
   )

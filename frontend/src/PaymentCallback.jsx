@@ -4,7 +4,7 @@ import axios from 'axios'
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL
 
-function PaymentCallback({ type = 'standard' }) {
+function PaymentCallback() {
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()
   const [status, setStatus] = useState('loading')
@@ -15,52 +15,56 @@ function PaymentCallback({ type = 'standard' }) {
     const processCallback = async () => {
       try {
         const reference = searchParams.get('reference')
-        const authCode = searchParams.get('authorization_code')
+        
+        console.log('Processing callback with reference:', reference)
+        console.log('API_BASE_URL:', API_BASE_URL)
         
         if (!reference) {
-          setError('No reference found in callback')
+          setError('No reference found in callback URL')
           setStatus('error')
           return
         }
 
-        let response
-        if (type === 'pod') {
-          // Pay on Delivery callback
-          response = await axios.get(`${API_BASE_URL}/pod-callback`, {
-            params: { auth_code: authCode, reference }
-          })
-        } else {
-          // Standard payment callback
-          response = await axios.get(`${API_BASE_URL}/callback`, {
-            params: { reference }
-          })
-        }
+        // Standard payment callback
+        console.log('Making request to:', `${API_BASE_URL}/callback`)
+        const response = await axios.get(`${API_BASE_URL}/callback`, {
+          params: { reference }
+        })
+
+        console.log('Callback response:', response.data)
 
         if (response.data.success) {
           setOrderData(response.data.order)
           setStatus('success')
         } else {
-          setError('Payment verification failed')
+          setError(`Payment verification failed: ${response.data.message || 'Unknown error'}`)
           setStatus('error')
         }
       } catch (error) {
         console.error('Callback error:', error)
-        setError(error.response?.data?.message || 'Failed to process payment')
+        console.error('Error response:', error.response)
+        
+        let errorMessage = 'Failed to process payment'
+        
+        if (error.response?.status === 404) {
+          errorMessage = 'Callback API endpoint not found'
+        } else if (error.response?.status >= 500) {
+          errorMessage = 'Server error during payment verification'
+        } else if (error.response?.data?.message) {
+          errorMessage = error.response.data.message
+        } else if (error.message) {
+          errorMessage = error.message
+        }
+        
+        setError(errorMessage)
         setStatus('error')
       }
     }
 
     processCallback()
-  }, [searchParams, type])
+  }, [searchParams])
 
   const getStatusMessage = () => {
-    if (type === 'pod') {
-      return {
-        title: '🔒 Card Authorized Successfully',
-        subtitle: 'Your payment method has been authorized for Pay on Delivery',
-        description: 'Your card will only be charged after successful delivery of your order.'
-      }
-    }
     return {
       title: '✅ Payment Successful',
       subtitle: 'Your payment has been processed successfully',
@@ -124,7 +128,7 @@ function PaymentCallback({ type = 'standard' }) {
               <p><strong>Order ID:</strong> {orderData.id}</p>
               <p><strong>Customer:</strong> {orderData.customerInfo.name}</p>
               <p><strong>Email:</strong> {orderData.customerInfo.email}</p>
-              <p><strong>Total Amount:</strong> ₦{orderData.totalAmount.toLocaleString()}</p>
+              <p><strong>Total Amount:</strong> R{orderData.totalAmount.toLocaleString()}</p>
               <p><strong>Payment Method:</strong> {orderData.method === 'POD' ? 'Pay on Delivery' : 'Pay Now'}</p>
               <p>
                 <strong>Status:</strong> 

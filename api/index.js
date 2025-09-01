@@ -61,7 +61,7 @@ app.post('/api/checkout', async (req, res) => {
       cart,
       customerInfo,
       method,
-      totalAmount: totalAmount / 100, // Store in naira
+      totalAmount: totalAmount / 100, // Store in rands
       status: 'pending',
       createdAt: new Date().toISOString()
     };

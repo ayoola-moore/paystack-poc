@@ -50,7 +50,7 @@ app.post('/checkout', async (req, res) => {
   try {
     const { cart, customerInfo, method = 'standard' } = req.body;
     
-    // Calculate total amount (in kobo for Paystack)
+    // Calculate total amount (in cents for Paystack - 1 Rand = 100 cents)
     const totalAmount = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0) * 100;
     
     // Create order record
@@ -60,7 +60,7 @@ app.post('/checkout', async (req, res) => {
       cart,
       customerInfo,
       method,
-      totalAmount: totalAmount / 100, // Store in naira
+      totalAmount: totalAmount / 100, // Store in rands
       status: 'pending',
       createdAt: new Date().toISOString()
     };
@@ -71,6 +71,7 @@ app.post('/checkout', async (req, res) => {
     const transactionData = {
       amount: totalAmount,
       email: customerInfo.email,
+      currency: 'ZAR', // South African Rand
       reference: orderId,
       callback_url: `${process.env.FRONTEND_URL}/callback`,
       metadata: {
@@ -217,7 +218,7 @@ app.post('/delivery/confirm', async (req, res) => {
       const chargeData = {
         authorization_code: order.authorizationCode,
         email: order.customerInfo.email,
-        amount: order.totalAmount * 100 // Convert to kobo
+        amount: order.totalAmount * 100 // Convert to cents
       };
       
       const chargeResponse = await paystackAPI('/transaction/charge_authorization', 'POST', chargeData);

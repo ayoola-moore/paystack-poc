@@ -1,4 +1,5 @@
 // In-memory database simulation (use external DB in production)
+
 const orders = new Map();
 const transactions = new Map();
 
@@ -54,7 +55,7 @@ export default async function handler(req, res) {
   try {
     console.log('Checkout request received:', req.body);
     
-    const { cart, customerInfo, method = 'standard' } = req.body;
+    const { cart, customerInfo } = req.body;
     
     // Validate input
     if (!cart || !Array.isArray(cart) || cart.length === 0) {
@@ -70,10 +71,10 @@ export default async function handler(req, res) {
       return res.status(500).json({ success: false, message: 'Payment service configuration error' });
     }
     
-    // Calculate total amount (in kobo for Paystack)
+    // Calculate total amount (in kobo for Paystack - 1 Rand = 100 cents)
     const totalAmount = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0) * 100;
     
-    console.log('Total amount calculated:', totalAmount, 'kobo');
+    console.log('Total amount calculated:', totalAmount, 'cents');
     
     // Create order record
     const orderId = `order_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
@@ -81,8 +82,8 @@ export default async function handler(req, res) {
       id: orderId,
       cart,
       customerInfo,
-      method,
-      totalAmount: totalAmount / 100, // Store in naira
+      method: 'standard',
+      totalAmount: totalAmount / 100, // Store in rands
       status: 'pending',
       createdAt: new Date().toISOString()
     };
@@ -93,23 +94,19 @@ export default async function handler(req, res) {
     // Get frontend URL for callbacks
     const frontendUrl = `https://${req.headers.host}`;
     
-    // Initialize Paystack transaction
+    // Initialize Paystack transaction for standard payment
     const transactionData = {
       amount: totalAmount,
       email: customerInfo.email,
+      currency: 'ZAR', // South African Rand
       reference: orderId,
       callback_url: `${frontendUrl}/callback`,
       metadata: {
         orderId,
-        method,
+        method: 'standard',
         customerInfo
       }
     };
-    
-    // For Pay on Delivery, restrict to card channel only
-    if (method === 'POD') {
-      transactionData.channels = ['card'];
-    }
     
     console.log('Initializing Paystack transaction:', transactionData);
     
@@ -121,7 +118,7 @@ export default async function handler(req, res) {
     transactions.set(orderId, {
       reference: orderId,
       authorization_url: response.data.authorization_url,
-      method,
+      method: 'standard',
       status: 'initialized'
     });
     

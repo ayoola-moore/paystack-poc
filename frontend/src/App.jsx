@@ -19,7 +19,6 @@ function App() {
         <Routes>
           <Route path="/" element={<Checkout />} />
           <Route path="/callback" element={<PaymentCallback />} />
-          <Route path="/pod-callback" element={<PaymentCallback type="pod" />} />
           <Route path="/order/:orderId" element={<OrderStatus />} />
           <Route path="/admin" element={<AdminPanel />} />
         </Routes>

@@ -105,7 +105,7 @@ function AdminPanel() {
                       </span>
                     </td>
                     <td style={{ padding: '12px', textAlign: 'right', fontWeight: 'bold' }}>
-                      ₦{order.totalAmount.toLocaleString()}
+                      R{order.totalAmount.toLocaleString()}
                     </td>
                     <td style={{ padding: '12px', textAlign: 'center' }}>
                       <span className={`status status-${order.status}`}>
@@ -156,7 +156,7 @@ function AdminPanel() {
         <div className="card">
           <h3 style={{ margin: '0 0 12px 0' }}>💰 Total Revenue</h3>
           <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#28a745' }}>
-            ₦{orders
+            R{orders
               .filter(order => order.status === 'completed' || order.status === 'paid')
               .reduce((sum, order) => sum + order.totalAmount, 0)
               .toLocaleString()}
@@ -188,7 +188,7 @@ function AdminPanel() {
               {orders.filter(order => order.method === 'standard').length} orders
             </div>
             <div style={{ color: '#666' }}>
-              ₦{orders
+              R{orders
                 .filter(order => order.method === 'standard')
                 .reduce((sum, order) => sum + order.totalAmount, 0)
                 .toLocaleString()} total
@@ -201,7 +201,7 @@ function AdminPanel() {
               {orders.filter(order => order.method === 'POD').length} orders
             </div>
             <div style={{ color: '#666' }}>
-              ₦{orders
+              R{orders
                 .filter(order => order.method === 'POD')
                 .reduce((sum, order) => sum + order.totalAmount, 0)
                 .toLocaleString()} total

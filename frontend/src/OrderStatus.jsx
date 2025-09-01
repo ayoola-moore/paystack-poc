@@ -170,10 +170,10 @@ function OrderStatus() {
           <div key={item.id} className="cart-item">
             <div>
               <h4 style={{ margin: '0 0 4px 0' }}>{item.name}</h4>
-              <p style={{ margin: 0, color: '#666' }}>₦{item.price.toLocaleString()} × {item.quantity}</p>
+              <p style={{ margin: 0, color: '#666' }}>R{item.price.toLocaleString()} × {item.quantity}</p>
             </div>
             <div style={{ fontWeight: 'bold' }}>
-              ₦{(item.price * item.quantity).toLocaleString()}
+              R{(item.price * item.quantity).toLocaleString()}
             </div>
           </div>
         ))}
@@ -181,7 +181,7 @@ function OrderStatus() {
         <div style={{ borderTop: '2px solid #333', paddingTop: '16px', marginTop: '16px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '20px', fontWeight: 'bold' }}>
             <span>Total:</span>
-            <span>₦{order.totalAmount.toLocaleString()}</span>
+            <span>R{order.totalAmount.toLocaleString()}</span>
           </div>
         </div>
       </div>
@@ -199,7 +199,7 @@ function OrderStatus() {
         <div className="card">
           <h3>💳 Payment Information</h3>
           <p><strong>Method:</strong> {order.method === 'POD' ? 'Pay on Delivery' : 'Pay Now'}</p>
-          <p><strong>Amount:</strong> ₦{order.totalAmount.toLocaleString()}</p>
+          <p><strong>Amount:</strong> R{order.totalAmount.toLocaleString()}</p>
           {order.method === 'POD' && order.status === 'authorized' && (
             <div style={{ marginTop: '16px', padding: '12px', background: '#fff3cd', borderRadius: '4px' }}>
               <p style={{ margin: 0, fontSize: '14px' }}>
