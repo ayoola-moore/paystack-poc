@@ -117,7 +117,7 @@ function PaymentCallback() {
           
           {orderData && (
             <div style={{ 
-              background: '#f8f9fa', 
+              background: '#000', 
               padding: '20px', 
               borderRadius: '8px', 
               textAlign: 'left',
@@ -141,46 +141,11 @@ function PaymentCallback() {
           
           <div style={{ marginTop: '30px', display: 'flex', gap: '16px', justifyContent: 'center' }}>
             <button 
-              className="btn btn-primary"
-              onClick={() => navigate(`/order/${orderData?.id}`)}
-            >
-              Track Order
-            </button>
-            <button 
               className="btn btn-success"
               onClick={() => navigate('/')}
             >
               Continue Shopping
             </button>
-          </div>
-        </div>
-      </div>
-
-      {/* Next Steps */}
-      <div className="card">
-        <h3>🚀 What happens next?</h3>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '20px', marginTop: '20px' }}>
-          <div style={{ textAlign: 'center' }}>
-            <div style={{ fontSize: '48px', marginBottom: '12px' }}>📦</div>
-            <h4>Order Preparation</h4>
-            <p style={{ color: '#666' }}>Your order is being prepared by the marketplace vendor</p>
-          </div>
-          
-          <div style={{ textAlign: 'center' }}>
-            <div style={{ fontSize: '48px', marginBottom: '12px' }}>🏍️</div>
-            <h4>Rider Assignment</h4>
-            <p style={{ color: '#666' }}>A delivery rider will be assigned to your order</p>
-          </div>
-          
-          <div style={{ textAlign: 'center' }}>
-            <div style={{ fontSize: '48px', marginBottom: '12px' }}>🚚</div>
-            <h4>Delivery</h4>
-            <p style={{ color: '#666' }}>
-              {type === 'pod' 
-                ? 'Pay when your order arrives safely'
-                : 'Your order will be delivered to your address'
-              }
-            </p>
           </div>
         </div>
       </div>
